@@ -1,7 +1,6 @@
 import Foundation
 import Awake
 import JVCocoa
-//import Crypto
 
 open class TizenDriver:WebSocketDelegate, Securable{
 	
