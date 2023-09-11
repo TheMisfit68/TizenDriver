@@ -6,7 +6,7 @@ import RegexBuilder
 
 open class TizenDriver:WebSocketDelegate, Securable{
     
-        // MARK: - Setup
+    // MARK: - Setup
     public let tvName:String
     let macAddress:String
     let ipAddress:String
@@ -32,16 +32,18 @@ open class TizenDriver:WebSocketDelegate, Securable{
             if !isReachable{
                 
                 if tvName == "T.V."{
-                    print("🐞\tT.V. -NOT- reachable") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                    print("🐞\tT.V. -NOT- reachable")
                 }
                 self.commandQueue = Queue<TizenDriver.Command>()
                 self.connectionState = .disconnected
                 self.powerState = .poweredOff
-                                
+                
             }else{
                 
                 if tvName == "T.V."{
-                    print("🐞\tT.V. is reachable") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                    print("🐞\tT.V. is reachable")
                 }
                 
             }
@@ -52,7 +54,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
     
     open var powerState:PowerState?{
         
-            // Prepare for .poweredOn or .poweredOff
+        // Prepare for .poweredOn or .poweredOff
         willSet{
             
             if newValue != powerState{
@@ -62,11 +64,12 @@ open class TizenDriver:WebSocketDelegate, Securable{
                 case .poweringUp:
                     
                     if tvName == "T.V."{
-                        print("🐞\tT.V. powering up") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                        print("🐞\tT.V. powering up")
                     }
                     
                     guard tvIsReachable else{
-                            // Perform a WakeOnLan to make the TV reachable
+                        // Perform a WakeOnLan to make the TV reachable
                         let tv = Awake.Device(MAC: macAddress, BroadcastAddr: "255.255.255.255", Port: 9)
                         _ = Awake.target(device: tv)
                         
@@ -81,7 +84,8 @@ open class TizenDriver:WebSocketDelegate, Securable{
                 case .poweringDown:
                     
                     if tvName == "T.V."{
-                        print("🐞\tT.V. powering down") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                        print("🐞\tT.V. powering down")
                     }
                     
                     guard !tvIsReachable else{
@@ -109,13 +113,15 @@ open class TizenDriver:WebSocketDelegate, Securable{
                 switch powerState{
                 case .poweredOn:
                     if tvName == "T.V."{
-                        print("🐞\tT.V. is powered on") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                        print("🐞\tT.V. is powered on")
                     }
                     let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
                     logger.info("✴️\t'\(self.tvName.capitalized)' powered on 🔲")
                 case .poweredOff:
                     if tvName == "T.V."{
-                        print("🐞\tT.V. is powered off") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                        print("🐞\tT.V. is powered off")
                     }
                     let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
                     logger.info("✴️\t'\(self.tvName.capitalized)' powered off 🔳")
@@ -129,7 +135,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
     
     private func reCheckPowerState(){
         
-            // Readjust powerState in a short intervals
+        // Readjust powerState in a short intervals
         self.powerStateReChecker = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             
             switch self.powerState {
@@ -143,7 +149,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
                     self.powerState = .poweredOff
                 }
             default:
-                    // powerState is already stable, no need for the timer for now
+                // powerState is already stable, no need for the timer for now
                 self.powerStateReChecker.invalidate()
             }
             
@@ -155,7 +161,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
     
     private var connectionState:ConnectionState! = nil{
         
-            // Prepare for .connected or .disconnected
+        // Prepare for .connected or .disconnected
         willSet{
             
             if newValue != connectionState{
@@ -164,7 +170,8 @@ open class TizenDriver:WebSocketDelegate, Securable{
                     
                 case .disconnecting:
                     if tvName == "T.V."{
-                        print("🐞\tT.V. disconnecting") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                        print("🐞\tT.V. disconnecting")
                     }
                     
                     webSocket.disconnect()
@@ -173,7 +180,8 @@ open class TizenDriver:WebSocketDelegate, Securable{
                     
                 case .connecting:
                     if tvName == "T.V."{
-                        print("🐞\tT.V. connecting") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+                        print("🐞\tT.V. connecting")
                     }
                     
                     guard powerState == .poweredOn else {
@@ -225,9 +233,11 @@ open class TizenDriver:WebSocketDelegate, Securable{
     private var newWebSocket:WebSocket{
         
         let base64DeviceName = Data(deviceName.utf8).base64EncodedString()
-        print("🐞\t\(deviceName)") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+        print("🐞\t\(deviceName)")
         let connectionString = "wss://\(ipAddress):\(port)/api/v2/channels/samsung.remote.control?name=\(base64DeviceName)&token=\(deviceToken ?? 0)"
-        print("🐞\t\(connectionString)") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+        print("🐞\t\(connectionString)")
         let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
         logger.info(
             """
@@ -270,7 +280,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
         powerState = .poweringDown
     }
     
-        // MARK: - Public API
+    // MARK: - Public API
     
     public func powerOn(){
         if (powerState != .poweredOn) && (powerState != .poweringUp){
@@ -411,11 +421,12 @@ open class TizenDriver:WebSocketDelegate, Securable{
         webSocket.send(text:commandString)
     }
     
-        // MARK: - Connection lifecycle
+    // MARK: - Connection lifecycle
     
     public func connected() {
         if tvName == "T.V."{
-            print("🐞\tconnected") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+            print("🐞\tconnected")
         }
         let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
         logger.info("✴️\t'\(self.deviceName.capitalized)' connected with '\(self.tvName)'")
@@ -437,7 +448,8 @@ open class TizenDriver:WebSocketDelegate, Securable{
     
     public func reconnect(){
         if tvName == "T.V."{
-            print("🐞\treconnecting") // TODO: - remove temp print statement
+#warning("DEBUGPRINT") // TODO: - remove temp print statement
+            print("🐞\treconnecting")
         }
         webSocket = newWebSocket
         connectionState = .connecting
@@ -449,7 +461,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
     }
     
     public func received(data: Data) {
-            // Not used the communication is text based
+        // Not used the communication is text based
     }
     
     public func received(error: Error) {
@@ -470,15 +482,15 @@ open class TizenDriver:WebSocketDelegate, Securable{
                 if newToken != self.deviceToken{
                     
                     if storeInKeyChain(value: String(tokenMatch.token), item: keyChainItem){
-                            // Try to connect all over again with the new token in place
+                        // Try to connect all over again with the new token in place
                         self.deviceToken = newToken
                         self.connectionState = .connecting
-                            // Store the pairing of this TV for reuse
+                        // Store the pairing of this TV for reuse
                         self.pairingInfo = [self.tvName:[self.deviceName:self.deviceToken]]
                     }
                     
                 }else{
-                        // All is perfect
+                    // All is perfect
                     connectionState = .paired
                 }
                 
