@@ -2,6 +2,7 @@ import Foundation
 import Awake
 import JVCocoa
 import OSLog
+import RegexBuilder
 
 open class TizenDriver:WebSocketDelegate, Securable{
     
@@ -27,7 +28,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
     open var tvIsReachable:Bool{
         
         get{
-            let isReachable = self.reachabilityPinger.ping(ipAddress, timeOut: 1.0, maxresponseime: 1.0)
+            let isReachable = self.reachabilityPinger.ping(ipAddress, timeOut: 1.0, maxresponseTime: 1.0)
             if !isReachable{
                 
                 if tvName == "T.V."{
@@ -461,14 +462,14 @@ open class TizenDriver:WebSocketDelegate, Securable{
         
         if result.contains("token"){
             
-            let regexPattern = "\"token\"\\s?:\\s?\"(\\d{8})\""
-            if let tokenString = result.matchesAndGroups(withRegex: regexPattern).last?.last, let newToken = Int(tokenString){
+            let regexPattern = /\"token\"\\s?:\\s?\"(?<token>\\d{8})\"/
+            if let tokenMatch = result.firstMatch(of: regexPattern), let newToken = Int(tokenMatch.token){
                 let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
-                logger.info("Token:\(tokenString) returned")
+                logger.info("Token:\(newToken) returned")
                 
                 if newToken != self.deviceToken{
                     
-                    if storeInKeyChain(value: tokenString, item: keyChainItem){
+                    if storeInKeyChain(value: String(tokenMatch.token), item: keyChainItem){
                             // Try to connect all over again with the new token in place
                         self.deviceToken = newToken
                         self.connectionState = .connecting

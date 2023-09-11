@@ -24,8 +24,9 @@ let package = Package(
             name: "TizenDriver",
             dependencies: [
 				"Awake",
-                "JVCocoa"
-            ]
+                "JVCocoa",
+            ],
+            swiftSettings: [.enableUpcomingFeature("BareSlashRegexLiterals")]
         )
     ]
 )
