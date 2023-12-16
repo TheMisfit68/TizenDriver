@@ -21,7 +21,6 @@ open class TizenDriver:WebSocketDelegate, Securable{
     var installedApps:[AppInfo]?
     var appRunning:Bool?
     
-    private let keyChainItem:KeyChainItem
     private let reachabilityPinger:Pinger = Pinger()
     
     
@@ -259,15 +258,14 @@ open class TizenDriver:WebSocketDelegate, Securable{
         self.ipAddress = ipAddress
         self.port = port
         self.deviceName = deviceName
-        self.keyChainItem = KeyChainItem(
-            withTag:"Tizen.pairingInfo",
+
+        if let deviceToken = valueFromKeyChain(
+            name:"Tizen.pairingInfo",
             kind: "Connection-token for websocket",
             account:  self.deviceName,
             location: self.tvName,
-            comment: "Unique token-number for each device connecting to the TV\n(Gets regenerated with each connection that is without a valid token)"
-        )
-        
-        if let deviceToken = valueFromKeyChain(item: keyChainItem){
+            comments: "Unique token-number for each device connecting to the TV\n(Gets regenerated with each connection that is without a valid token)"
+        ){
             let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
             logger.info("Token: \(deviceToken) from keychain for \(tvName)")
             self.deviceToken = Int(deviceToken)
@@ -481,7 +479,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
                 
                 if newToken != self.deviceToken{
                     
-                    if storeInKeyChain(value: String(tokenMatch.token), item: keyChainItem){
+                    if storeValueInKeyChain(name:"Tizen.pairingInfo", kind: "Connection-token for websocket", account: self.deviceName, location: self.tvName, comments: "Unique token-number for each device connecting to the TV\n(Gets regenerated with each connection that is without a valid token)", secureValue:String(tokenMatch.token)){
                         // Try to connect all over again with the new token in place
                         self.deviceToken = newToken
                         self.connectionState = .connecting
