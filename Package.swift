@@ -15,7 +15,9 @@ let package = Package(
     dependencies: [
 		// Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/TheMisfit68/Awake.git", branch:"master"),
-        .package(url: "https://github.com/TheMisfit68/JVCocoa.git", branch:"master"),
+        .package(url: "https://github.com/TheMisfit68/JVNetworking.git", branch:"master"),
+		.package(url: "https://github.com/TheMisfit68/JVSecurity.git", branch:"master"),
+		.package(url: "https://github.com/TheMisfit68/JVSwiftCore.git", branch:"master"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -24,7 +26,9 @@ let package = Package(
             name: "TizenDriver",
             dependencies: [
 				"Awake",
-                "JVCocoa",
+                "JVNetworking",
+				"JVSecurity",
+				"JVSwiftCore",
             ],
             swiftSettings: [.enableUpcomingFeature("BareSlashRegexLiterals")]
         )
