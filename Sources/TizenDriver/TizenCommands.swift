@@ -1,9 +1,11 @@
 //
-//  Commands.swift
-//  
+//  TizenCommands.swift
+//
 //
 //  Created by Jan Verrept on 28/02/2020.
 //
+
+import Foundation
 
 public extension TizenDriver{
 	

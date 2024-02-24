@@ -1,7 +1,9 @@
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
 //
-//   let AppsRootData = try? JSONDecoder().decode(AppsRootData.self, from: jsonData)
+//  TizenAppInfo.swift
+//
+//
+//  Created by Jan Verrept on 28/02/2020.
+//
 
 import Foundation
 

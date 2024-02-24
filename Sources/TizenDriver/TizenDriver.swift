@@ -1,10 +1,18 @@
+//
+//  TizenDriver.swift
+//
+//
+//  Created by Jan Verrept on 28/02/2020.
+//
+
+import Foundation
+import OSLog
+import RegexBuilder
 import Awake
 import JVNetworking
 import JVSecurity
 import JVSwiftCore
-import Foundation
-import OSLog
-import RegexBuilder
+
 
 open class TizenDriver:WebSocketDelegate, Securable{
 	
