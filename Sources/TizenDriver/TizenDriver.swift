@@ -14,10 +14,8 @@ import JVSecurity
 import JVSwiftCore
 
 
-open class TizenDriver:WebSocketDelegate, Securable{
-	
-	let logger = Logger(subsystem: "be.oneclick.TizenDriver", category: "TizenDriver")
-	
+open class TizenDriver:WebSocketDelegate, Securable, Loggable{
+		
 	// MARK: - Setup
 	public let tvName:String
 	let macAddress:String
@@ -127,13 +125,13 @@ open class TizenDriver:WebSocketDelegate, Securable{
 							// TODO: - Remove this print statement!
 							print("🐞\tT.V. is powered on")
 						}
-						logger.info("✴️\t'\(self.tvName.capitalized)' powered on 🔲")
+						TizenDriver.logger.info("✴️\t'\(self.tvName.capitalized)' powered on 🔲")
 					case .poweredOff:
 						if tvName == "T.V."{
 							// TODO: - Remove this print statement!
 							print("🐞\tT.V. is powered off")
 						}
-						logger.info("✴️\t'\(self.tvName.capitalized)' powered off 🔳")
+						TizenDriver.logger.info("✴️\t'\(self.tvName.capitalized)' powered off 🔳")
 						
 					default: break
 				}
@@ -183,7 +181,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 						}
 						
 						webSocket.disconnect()
-						logger.info("\(self.deviceName.capitalized) disconnecting from '\(self.tvName)' ")
+						TizenDriver.logger.info("\(self.deviceName.capitalized) disconnecting from '\(self.tvName)' ")
 						
 					case .connecting:
 						if tvName == "T.V."{
@@ -197,7 +195,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 						}
 						
 						webSocket.connect()
-						logger.info("\(self.deviceName.capitalized) connecting to '\(self.tvName)' ")
+						TizenDriver.logger.info("\(self.deviceName.capitalized) connecting to '\(self.tvName)' ")
 						
 						
 					default: break
@@ -215,15 +213,15 @@ open class TizenDriver:WebSocketDelegate, Securable{
 					
 					if connectionState != oldValue{
 						if let token = self.deviceToken{
-							logger.info("✅\t'\(self.deviceName.capitalized)' paired with '\(self.tvName)' using key \(token)")
+							TizenDriver.logger.info("✅\t'\(self.deviceName.capitalized)' paired with '\(self.tvName)' using key \(token)")
 						}
 						getAppList()
 					}
 					
 				case .connected:
-					logger.info("\(self.deviceName.capitalized) connected with '\(self.tvName)'")
+					TizenDriver.logger.info("\(self.deviceName.capitalized) connected with '\(self.tvName)'")
 				case .disconnected:
-					logger.info("\(self.deviceName.capitalized, privacy:.public) disconnected from '\(self.tvName, privacy:.public)'")
+					TizenDriver.logger.info("\(self.deviceName.capitalized, privacy:.public) disconnected from '\(self.tvName, privacy:.public)'")
 				default: break
 			}
 		}
@@ -241,7 +239,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 		let connectionString = "wss://\(ipAddress):\(port)/api/v2/channels/samsung.remote.control?name=\(base64DeviceName)&token=\(deviceToken ?? 0)"
 		// TODO: - Remove this print statement!
 		print("🐞\t\(connectionString)")
-		logger.info(
+		TizenDriver.logger.info(
    """
    Connectionstring:
    \(connectionString, privacy:.public)
@@ -264,7 +262,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 		
 		if let deviceToken = tokenFromKeyChain(name: "Tizen.pairingInfo", location: self.deviceName){
 			
-			logger.info("Token: \(deviceToken) from keychain for \(tvName)")
+			TizenDriver.logger.info("Token: \(deviceToken) from keychain for \(tvName)")
 			self.deviceToken = Int(deviceToken)
 			self.pairingInfo = [self.tvName:[self.deviceName:self.deviceToken]]
 			
@@ -316,7 +314,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 			commandQueue.enqueue(.APP(app))
 			appRunning = true
 		}else{
-			logger.error("App \(app.rawValue) not installed on '\(self.tvName)'")
+			TizenDriver.logger.error("App \(app.rawValue) not installed on '\(self.tvName)'")
 		}
 		
 	}
@@ -423,13 +421,13 @@ open class TizenDriver:WebSocketDelegate, Securable{
 			// TODO: - Remove this print statement!
 			print("🐞\tconnected")
 		}
-		logger.info("✴️\t'\(self.deviceName.capitalized)' connected with '\(self.tvName)'")
+		TizenDriver.logger.info("✴️\t'\(self.deviceName.capitalized)' connected with '\(self.tvName)'")
 		
 		connectionState = .connected
 	}
 	
 	public func disconnected(error: Error?) {
-		logger.info("✴️\t'\(self.deviceName.capitalized)' disconnected from '\(self.tvName)'")
+		TizenDriver.logger.info("✴️\t'\(self.deviceName.capitalized)' disconnected from '\(self.tvName)'")
 		
 		if (connectionState > .disconnecting){
 			reconnect()
@@ -458,7 +456,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 	}
 	
 	public func received(error: Error) {
-		logger.error("Websocket returned error:\n\(error)")
+		TizenDriver.logger.error("Websocket returned error:\n\(error)")
 		connectionState = .disconnected
 	}
 	
@@ -468,7 +466,7 @@ open class TizenDriver:WebSocketDelegate, Securable{
 			
 			let regexPattern = /\"token\"\\s?:\\s?\"(?<token>\\d{8})\"/
 			if let tokenMatch = result.firstMatch(of: regexPattern), let newToken = Int(tokenMatch.token){
-				logger.info("Token:\(newToken) returned")
+				TizenDriver.logger.info("Token:\(newToken) returned")
 				
 				if newToken != self.deviceToken{
 					
